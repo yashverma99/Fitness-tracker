@@ -1,0 +1,556 @@
+# Fitness-tracker
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitTracker Pro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .nav {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-btn:hover, .nav-btn.active {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .section {
+            display: none;
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+            margin-bottom: 20px;
+        }
+
+        .section.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card h3 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .stat-card p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .activities-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .activity-item {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .activity-info h4 {
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .activity-info p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .delete-btn {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .delete-btn:hover {
+            background: #ff3742;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .progress-bar {
+            background: #e1e5e9;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 20px;
+            border-radius: 10px;
+            transition: width 0.8s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .nav {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .nav-btn {
+                width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏋️ FitTracker Pro</h1>
+            <p>Track your fitness journey with style</p>
+        </div>
+
+        <div class="nav">
+            <button class="nav-btn active" onclick="showSection('dashboard')">📊 Dashboard</button>
+            <button class="nav-btn" onclick="showSection('log-activity')">➕ Log Activity</button>
+            <button class="nav-btn" onclick="showSection('activities')">📝 View Activities</button>
+            <button class="nav-btn" onclick="showSection('progress')">📈 Progress</button>
+        </div>
+
+        <!-- Dashboard Section -->
+        <div id="dashboard" class="section active">
+            <h2>📊 Today's Overview</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3 id="total-steps">0</h3>
+                    <p>Steps Taken</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="total-workouts">0</h3>
+                    <p>Workouts Completed</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="total-calories">0</h3>
+                    <p>Calories Burned</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="total-time">0</h3>
+                    <p>Minutes Active</p>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <h3>Daily Goals Progress</h3>
+                <div style="margin-top: 15px;">
+                    <p>Steps Goal (10,000)</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="steps-progress" style="width: 0%">0%</div>
+                    </div>
+                </div>
+                <div style="margin-top: 15px;">
+                    <p>Calories Goal (500)</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="calories-progress" style="width: 0%">0%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Log Activity Section -->
+        <div id="log-activity" class="section">
+            <h2>➕ Log New Activity</h2>
+            <form id="activity-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="activity-type">Activity Type</label>
+                        <select id="activity-type" required>
+                            <option value="">Select Activity</option>
+                            <option value="walking">🚶 Walking</option>
+                            <option value="running">🏃 Running</option>
+                            <option value="cycling">🚴 Cycling</option>
+                            <option value="swimming">🏊 Swimming</option>
+                            <option value="weight-training">🏋️ Weight Training</option>
+                            <option value="yoga">🧘 Yoga</option>
+                            <option value="cardio">❤️ Cardio</option>
+                            <option value="other">📝 Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="activity-date">Date</label>
+                        <input type="date" id="activity-date" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="duration">Duration (minutes)</label>
+                        <input type="number" id="duration" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="calories">Calories Burned</label>
+                        <input type="number" id="calories" min="0">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="steps">Steps (if applicable)</label>
+                        <input type="number" id="steps" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="intensity">Intensity Level</label>
+                        <select id="intensity">
+                            <option value="low">Low</option>
+                            <option value="moderate">Moderate</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="notes">Notes (optional)</label>
+                    <textarea id="notes" rows="3" placeholder="How did you feel? Any achievements?"></textarea>
+                </div>
+
+                <button type="submit" class="btn">🎯 Log Activity</button>
+            </form>
+        </div>
+
+        <!-- Activities Section -->
+        <div id="activities" class="section">
+            <h2>📝 Recent Activities</h2>
+            <div id="activities-container" class="activities-list">
+                <!-- Activities will be populated here -->
+            </div>
+        </div>
+
+        <!-- Progress Section -->
+        <div id="progress" class="section">
+            <h2>📈 Weekly Progress</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3 id="week-steps">0</h3>
+                    <p>Total Steps This Week</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="week-workouts">0</h3>
+                    <p>Workouts This Week</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="week-calories">0</h3>
+                    <p>Calories Burned This Week</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="avg-duration">0</h3>
+                    <p>Avg Workout Duration (min)</p>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <h3>Weekly Activity Summary</h3>
+                <div id="weekly-chart" style="margin-top: 20px;">
+                    <!-- Simple text-based chart -->
+                    <div id="weekly-summary"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data storage using JavaScript objects (in-memory storage)
+        let fitnessData = {
+            activities: [],
+            dailyGoals: {
+                steps: 10000,
+                calories: 500
+            }
+        };
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set today's date as default
+            document.getElementById('activity-date').value = new Date().toISOString().split('T')[0];
+            
+            // Load data and update displays
+            loadData();
+            updateDashboard();
+            displayActivities();
+            updateProgress();
+        });
+
+        // Navigation
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => section.classList.remove('active'));
+            
+            // Remove active class from all nav buttons
+            const navBtns = document.querySelectorAll('.nav-btn');
+            navBtns.forEach(btn => btn.classList.remove('active'));
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+            
+            // Update displays when switching sections
+            if (sectionId === 'dashboard') updateDashboard();
+            if (sectionId === 'activities') displayActivities();
+            if (sectionId === 'progress') updateProgress();
+        }
+
+        // Form submission
+        document.getElementById('activity-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const activity = {
+                id: Date.now(),
+                type: document.getElementById('activity-type').value,
+                date: document.getElementById('activity-date').value,
+                duration: parseInt(document.getElementById('duration').value),
+                calories: parseInt(document.getElementById('calories').value) || 0,
+                steps: parseInt(document.getElementById('steps').value) || 0,
+                intensity: document.getElementById('intensity').value,
+                notes: document.getElementById('notes').value,
+                timestamp: new Date().toISOString()
+            };
+            
+            fitnessData.activities.push(activity);
+            saveData();
+            
+            // Reset form
+            this.reset();
+            document.getElementById('activity-date').value = new Date().toISOString().split('T')[0];
+            
+            // Show success message
+            alert('🎉 Activity logged successfully!');
+            
+            // Update displays
+            updateDashboard();
+            displayActivities();
+            updateProgress();
+        });
+
+        // Update dashboard
+        function updateDashboard() {
+            const today = new Date().toISOString().split('T')[0];
+            const todayActivities = fitnessData.activities.filter(activity => activity.date === today);
+            
+            const totalSteps = todayActivities.reduce((sum, activity) => sum + activity.steps, 0);
+            const totalWorkouts = todayActivities.length;
+            const totalCalories = todayActivities.reduce((sum, activity) => sum + activity.calories, 0);
+            const totalTime = todayActivities.reduce((sum, activity) => sum + activity.duration, 0);
+            
+            document.getElementById('total-steps').textContent = totalSteps.toLocaleString();
+            document.getElementById('total-workouts').textContent = totalWorkouts;
+            document.getElementById('total-calories').textContent = totalCalories;
+            document.getElementById('total-time').textContent = totalTime;
+            
+            // Update progress bars
+            const stepsProgress = Math.min((totalSteps / fitnessData.dailyGoals.steps) * 100, 100);
+            const caloriesProgress = Math.min((totalCalories / fitnessData.dailyGoals.calories) * 100, 100);
+            
+            document.getElementById('steps-progress').style.width = stepsProgress + '%';
+            document.getElementById('steps-progress').textContent = Math.round(stepsProgress) + '%';
+            
+            document.getElementById('calories-progress').style.width = caloriesProgress + '%';
+            document.getElementById('calories-progress').textContent = Math.round(caloriesProgress) + '%';
+        }
+
+        // Display activities
+        function displayActivities() {
+            const container = document.getElementById('activities-container');
+            const sortedActivities = fitnessData.activities.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            if (sortedActivities.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #666; padding: 40px;">No activities logged yet. Start by adding your first workout!</p>';
+                return;
+            }
+            
+            container.innerHTML = sortedActivities.map(activity => `
+                <div class="activity-item">
+                    <div class="activity-info">
+                        <h4>${getActivityIcon(activity.type)} ${formatActivityType(activity.type)}</h4>
+                        <p><strong>Date:</strong> ${formatDate(activity.date)} | <strong>Duration:</strong> ${activity.duration} min</p>
+                        <p><strong>Calories:</strong> ${activity.calories} | <strong>Steps:</strong> ${activity.steps} | <strong>Intensity:</strong> ${activity.intensity}</p>
+                        ${activity.notes ? `<p><strong>Notes:</strong> ${activity.notes}</p>` : ''}
+                    </div>
+                    <button class="delete-btn" onclick="deleteActivity(${activity.id})">Delete</button>
+                </div>
+            `).join('');
+        }
+
+        // Update progress
+        function updateProgress() {
+            const weekStart = new Date();
+            weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+            weekStart.setHours(0, 0, 0, 0);
+            
+            const weekActivities = fitnessData.activities.filter(activity => {
+                const activityDate = new Date(activity.date);
+                return activityDate >= weekStart;
+            });
+            
+            const weekSteps = weekActivities.reduce((sum, activity) => sum + activity.steps, 0);
+            const weekWorkouts = weekActivities.length;
+            const weekCalories = weekActivities.reduce((sum, activity) => sum + activity.calories, 0);
+            const avgDuration = weekWorkouts > 0 ? Math.round(weekActivities.reduce((sum, activity) => sum + activity.duration, 0) / weekWorkouts) : 0;
+            
+            document.getElementById('week-steps').textContent = weekSteps.toLocaleString();
+            document.getElementById('week-workouts').textContent = weekWorkouts;
+        
